@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameAI : MonoBehaviour
@@ -23,6 +24,12 @@ public class GameAI : MonoBehaviour
     public Sprite PigSprite;
     public Sprite SnakeSprite;
     public Sprite GoatSprite;
+    public Sprite EagleSprite;
+    public Sprite DuckSprite;
+    public Sprite SealSprite;
+    public Sprite WolfSprite;
+    public Sprite WhaleSprite;
+    public Sprite HorseSprite;
 
     private AudioSource MainSound;
     private AudioClip MainClip;
@@ -38,6 +45,14 @@ public class GameAI : MonoBehaviour
     public AudioClip PigSound;
     public AudioClip SnakeSound;
     public AudioClip GoatSound;
+    public AudioClip EagleSound;
+    public AudioClip DuckSound;
+    public AudioClip SealSound;
+    public AudioClip WolfSound;
+    public AudioClip WhaleSound;
+    public AudioClip HorseSound;
+
+    public GameObject BuzzerObject;
 
     public Button Button1;
     public Button Button2;
@@ -90,10 +105,11 @@ public class GameAI : MonoBehaviour
 
 
     public GameObject ParticlePrefab;
-    public GameObject Particles;
-    private GameObject ParticleObject;
+    //public GameObject Particles;
+    //private GameObject ParticleObject;
     private int ACounter = 0;
-    private Color color;
+    private float colorDensity = 0.5f;
+    private Color WinImage;
     private Image CurrentImage;
     private Text CurrentText;
     public List<string> AnimalList = new List<string>();
@@ -111,6 +127,7 @@ public class GameAI : MonoBehaviour
         MainSound = GetComponent<AudioSource>();
         MainClip = MainSound.GetComponent<AudioClip>();
 
+
         AnimalList.Add("Cat");
         AnimalList.Add("Dog");
         AnimalList.Add("Elephant");
@@ -122,6 +139,12 @@ public class GameAI : MonoBehaviour
         AnimalList.Add("Pig");
         AnimalList.Add("Snake");
         AnimalList.Add("Goat");
+        AnimalList.Add("Eagle");
+        AnimalList.Add("Duck");
+        AnimalList.Add("Seal");
+        AnimalList.Add("Whale");
+        AnimalList.Add("Wolf");
+        AnimalList.Add("Horse");
 
         ImageList.Add(CatSprite);
         ImageList.Add(DogSprite);
@@ -134,6 +157,13 @@ public class GameAI : MonoBehaviour
         ImageList.Add (PigSprite);
         ImageList.Add(SnakeSprite);
         ImageList.Add(GoatSprite);
+        ImageList.Add(EagleSprite);
+        ImageList.Add(DuckSprite);
+        ImageList.Add(SealSprite);
+        ImageList.Add(WhaleSprite);
+        ImageList.Add(WolfSprite);
+        ImageList.Add(HorseSprite);
+
 
         AudioList.Add(CatSound);
         AudioList.Add(DogSound);
@@ -146,6 +176,12 @@ public class GameAI : MonoBehaviour
         AudioList.Add(PigSound);
         AudioList.Add(SnakeSound);
         AudioList.Add(GoatSound);
+        AudioList.Add(EagleSound);
+        AudioList.Add(DuckSound);
+        AudioList.Add(SealSound);
+        AudioList.Add(WhaleSound);
+        AudioList.Add(WolfSound);
+        AudioList.Add(HorseSound);
 
         ButtonList.Add(Button1);
         ButtonList.Add(Button2);
@@ -199,7 +235,7 @@ public class GameAI : MonoBehaviour
 
         while (ACounter < 5)
         {
-            TempIndex = Random.Range(0, 10);
+            TempIndex = Random.Range(0, 17);
             if (!TempList.Contains(TempIndex))
             {
                 CurrentImage = ButtonList[ACounter].GetComponent<Image>();
@@ -239,17 +275,25 @@ public class GameAI : MonoBehaviour
                 Decision = "Correct";
                 Debug.Log("Correct");
                 Validation(CorrectSprite, correctText);
+                // blur button
+                WinImage = ButtonList[CorrectSprite].image.color;
+                WinImage.a = colorDensity;
+                ButtonList[CorrectSprite].image.color = WinImage;
+                // blur text
+                WinImage = ButtonList2[correctText].image.color;
+                WinImage.a = colorDensity;
+                ButtonList2[correctText].image.color = WinImage;
+
                 CorrectCounter = 0;
-                //ButtonList.RemoveAt(CorrectSprite);
-                //ButtonList2.RemoveAt(correctText);
-                //EnableButtons();
-                //EnableText();
+                
 
             }
             else
             {
+                Handheld.Vibrate();
                 Decision = "InCorrect";
                 Debug.Log("InCorrect");
+                BuzzerObject.GetComponent<AudioSource>().Play();
                 Validation(CorrectSprite, correctText);
                 Debug.Log(CorrectSprite + " , " +  correctText + " , " + Decision + " , " + AnimalList[TempList2[CorrectSprite]]  + " , " + AnimalList[TempList[correctText]]);
                 CorrectCounter = 0;
@@ -262,13 +306,20 @@ public class GameAI : MonoBehaviour
         if(match == 5)
         {
             //ParticleObject = Instantiate(ParticlePrefab, Particles.transform.position, Quaternion.identity);
-            ParticleObject = Instantiate(ParticlePrefab, Particles.transform.position, Quaternion.identity);
-            Invoke("Restart", 1f);
+            //ParticleObject = Instantiate(ParticlePrefab, Particles.transform.position, Quaternion.identity);
+            ParticlePrefab.SetActive(true);
+            Invoke("CallEduScene", 2f);
+            //Invoke("Restart", 1f);
             match = 0;
         }
 
 
         
+    }
+
+    void CallEduScene()
+    {
+        SceneManager.LoadScene("EduScene");
     }
 
     void Validation(int Animal, int Text)
@@ -690,7 +741,7 @@ public class GameAI : MonoBehaviour
 
         while (ACounter < 5)
         {
-            TempIndex = Random.Range(0, 10);
+            TempIndex = Random.Range(0, 17);
             if (!TempList.Contains(TempIndex))
             {
                 CurrentImage = ButtonList[ACounter].GetComponent<Image>();
